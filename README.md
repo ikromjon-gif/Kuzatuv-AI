@@ -1,35 +1,33 @@
-⚽ AI-Powered Football Analytics
+# ⚽ Kuzatuv AI — Football Analytics
 
-An AI-powered Computer Vision system for analyzing football match videos using YOLO11, ByteTrack, OpenCV, and HSV color classification.
+> **Computer vision for player tracking, team classification, ball tracking, and motion analysis.**
 
-The system detects and tracks players and the ball, assigns persistent IDs, classifies teams based on jersey colors, and generates an annotated football analytics video.
+Kuzatuv AI is a **video-based football analytics prototype** built with YOLO11, ByteTrack, OpenCV, and HSV color analysis. The system processes recorded football match videos and generates an annotated output video with persistent player IDs, team classification, ball tracking, camera-motion compensation, trajectories, and relative motion statistics.
 
-🚀 Features
-👤 Player Detection — Detects football players from video frames using YOLO11.
-🆔 Player Tracking — Tracks players across frames using ByteTrack.
-🎯 Persistent Player IDs — Assigns consistent IDs to detected players.
-👕 Team Classification — Classifies players based on jersey colors using HSV color analysis.
-🇺🇿 Uzbekistan Team Detection — Blue jerseys.
-🇮🇷 Iran Team Detection — White jerseys.
-🧤 Goalkeeper Detection — Light green jerseys.
-🟥 Referee Detection — Red jerseys.
-⚽ Ball Detection & Tracking — Detects and tracks the football.
-☄️ Ball Motion Visualization — Displays a dynamic meteor-style motion effect.
-⭕ Player Position Markers — Draws clean visual markers under each player.
-🎥 Annotated Video Output — Generates a processed football analytics video.
-🧠 Technologies Used
-Technology	Purpose
-Python	Main programming language
-YOLO11	Player and ball detection
-ByteTrack	Multi-object tracking
-OpenCV	Video processing and visualization
-HSV Color Classification	Team and jersey color classification
-NumPy	Coordinate and motion calculations
-Google Colab	GPU-based processing
-🏗️ System Architecture
+> **Current scope:** batch analysis of uploaded/recorded videos in Google Colab. This repository is not a real-time production system.
 
-<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/d6644714-5f93-4031-b7d9-695dba52fb09" />
+## 🚀 Features
 
+- 👤 **Player Detection** — YOLO11 detects players in each frame.
+- 🆔 **Persistent Player IDs** — ByteTrack maintains player identities across frames.
+- 👕 **Team Classification** — HSV-based jersey color analysis identifies team categories.
+- 🇺🇿 **Uzbekistan Team** — Blue jersey classification.
+- 🇮🇷 **Iran Team** — White jersey classification.
+- 🧤 **Goalkeeper Detection** — Light-green jersey classification.
+- 🟥 **Referee Detection** — Red jersey classification.
+- ⚽ **Ball Detection & Tracking** — Detects candidate football positions and maintains a smoothed trajectory.
+- ☄️ **Ball Motion Visualization** — Meteor-style visual effect for the tracked ball.
+- 🎯 **Player Trajectories** — Visualizes recent player movement paths.
+- 🎥 **Annotated Video Output** — Exports a processed football video.
+- 🎥 **Camera Motion Estimation** — Estimates camera translation and scale using optical flow and affine transformation.
+- ✂️ **Camera Cut Detection** — Uses frame histogram differences to detect abrupt scene changes.
+- 🏃 **Camera-Compensated Motion** — Estimates relative player movement after compensating for camera motion.
+- 📈 **Acceleration & Direction** — Calculates relative acceleration and movement direction.
+- 📊 **CSV Statistics** — Exports per-player tracking and motion statistics.
+
+## 🧠 Processing Pipeline
+
+```text
 Football Video
       │
       ▼
@@ -43,72 +41,135 @@ Player Detection    Ball Detection
 ByteTrack         Ball Tracking
       │               │
       ▼               ▼
-Player IDs        Motion Analysis
+Persistent IDs     Smoothing / Motion
       │
       ▼
-HSV Jersey Classification
+HSV Jersey Color Classification
       │
       ▼
-Team Identification
+Team / Role Classification
+      │
+      ▼
+Camera Motion Estimation
+      │
+      ▼
+Camera-Compensated Player Motion
+      │
+      ├── Trajectory
+      ├── Relative Speed
+      ├── Acceleration
+      └── Direction
       │
       ▼
 OpenCV Visualization
       │
-      ▼
-AI Football Analytics Video
-🎯 Current Output
+      ├── Annotated Video
+      └── CSV Player Statistics
+```
 
-The system processes football videos and generates visual analytics including:
+## 📊 Output
 
-UZB 1      IRN 3      UZB 7
-   ⭕         ⭕          ⭕
+For each sufficiently tracked player, the generated CSV can include:
 
+| Metric | Description |
+|---|---|
+| `Track_ID` | Original ByteTrack identifier |
+| `Player_ID` | Stable display number |
+| `Team` | Classified team/role |
+| `Frames_Tracked` | Number of processed frames for the player |
+| `Distance_px` | Relative distance in pixels |
+| `Average_Relative_Speed_px_s` | Average relative speed in pixels/second |
+| `Max_Relative_Speed_px_s` | Maximum relative speed |
+| `Average_Acceleration_px_s2` | Average absolute acceleration |
+| `Max_Acceleration_px_s2` | Maximum absolute acceleration |
+| `Dominant_Direction` | Most frequent movement direction |
 
-              ⚽☄️
+### ⚠️ Important metric limitation
 
-Each detected player receives:
+**Speed and distance are relative pixel measurements.** They are not real-world km/h or kilometers. Converting them to physical units requires pitch calibration, camera geometry, and a suitable spatial reference such as homography.
 
-A persistent tracking ID
-Team classification
-A visual ground marker
+## 🛠️ Technology Stack
 
-The ball is detected and visualized with a dynamic motion effect.
+- **Python**
+- **YOLO11 / Ultralytics** — object detection and tracking
+- **ByteTrack** — multi-object tracking
+- **OpenCV** — video processing, optical flow, camera estimation, and visualization
+- **HSV Color Analysis** — jersey/team classification
+- **NumPy** — numerical and coordinate calculations
+- **Pandas** — player statistics and CSV export
+- **PyTorch** — GPU availability/device selection
+- **Google Colab** — execution environment and GPU acceleration
 
-📊 Future Improvements
+## ⚙️ How It Works
 
-Planned features include:
+1. Upload a recorded football match video in Google Colab.
+2. The script reads the video metadata and selects GPU when available.
+3. YOLO11 detects and tracks objects using ByteTrack.
+4. Player jersey regions are analyzed in HSV color space.
+5. Stable player IDs are assigned for visualization.
+6. Camera motion is estimated from optical flow between frames.
+7. Player movement is compensated for estimated camera motion.
+8. Trajectories, relative speed, acceleration, and direction are calculated.
+9. The ball is smoothed and rendered with a motion effect.
+10. The final annotated MP4 and player-statistics CSV are exported.
 
-📊 Player Heatmaps
-⚡ Player Speed Analysis
-📏 Distance Covered
-⚽ Ball Possession Detection
-🔄 Pass Detection
-🎯 Shot Detection
-🗺️ Tactical Formation Analysis
-📈 Advanced Match Statistics Dashboard
-⚙️ How It Works
-Upload a football match video.
-YOLO11 detects players and the ball.
-ByteTrack assigns and maintains player IDs.
-HSV color analysis identifies teams based on jersey colors.
-OpenCV draws player markers, IDs, and ball motion effects.
-The processed result is exported as a new video.
-🛠️ Installation
-pip install ultralytics opencv-python-headless lap numpy
+## 💻 Run in Google Colab
 
-Run the project:
+The current implementation is designed as a **Google Colab notebook/script workflow**.
 
-python football_analytics.py
-📌 Example Use Cases
-Football match analysis
-Player tracking
-Sports analytics research
-Computer Vision projects
-AI-based video analysis
-Tactical analysis systems
-👨‍💻 Author
+Install dependencies:
 
-Ikromjon Tojiboev
+```bash
+pip install -q ultralytics opencv-python-headless pandas
+```
 
-Master's Degree in Computer Engineering
-AI / Machine Learning / Computer Vision Enthusiast
+Then run the notebook cells and upload a football video when prompted.
+
+The script produces:
+
+```text
+/content/football_analytics_V2.mp4
+/content/football_player_statistics_V2.csv
+```
+
+## 🎯 Example Use Cases
+
+- Football match video analysis
+- Player tracking research
+- Sports computer vision experiments
+- Team/role classification research
+- Camera-motion-aware movement analysis
+- AI-based sports analytics prototypes
+
+## 🔮 Roadmap
+
+Potential future development for Kuzatuv AI includes:
+
+- 📊 Player heatmaps
+- ⚽ Ball possession estimation
+- 🔄 Pass detection
+- 🎯 Shot detection
+- 🗺️ Tactical formation analysis
+- 📈 Advanced match statistics
+- 🏟️ Pitch calibration and real-world distance/speed estimation
+- 🌐 FastAPI backend
+- 🖥️ Web analytics dashboard
+- ⚡ Real-time processing
+
+## ⚠️ Limitations
+
+- Team classification is based on jersey-color heuristics and can be affected by lighting, shadows, occlusion, and similar colors.
+- Camera compensation is an estimate and may become unreliable during rapid camera movement or scene cuts.
+- Ball tracking can fail during occlusion, very fast motion, or ambiguous detections.
+- Current speed and distance values are **pixel-based relative metrics**, not physical measurements.
+- The current implementation is a **recorded-video prototype running in Google Colab**, not a deployed real-time service.
+
+## 👨‍💻 Author
+
+**Ikromjon Tojiboev**  
+Master's in Computer Engineering  
+AI / Machine Learning / Computer Vision
+
+---
+
+⭐ **Kuzatuv AI** is an evolving sports-computer-vision project focused on turning football video into structured player and motion analytics.
